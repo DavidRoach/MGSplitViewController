@@ -24,10 +24,6 @@
 #define MG_ANIMATION_CHANGE_SUBVIEWS_ORDER		@"ChangeSubviewsOrder"	// Animation ID for internal use.
 
 
-static BOOL isIos7() {
-    return ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7);
-}
-
 @interface MGSplitViewController (MGPrivateMethods)
 
 - (void)setup;
@@ -112,6 +108,7 @@ static BOOL isIos7() {
 	return self;
 }
 
+
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
 	if ((self = [super initWithCoder:aDecoder])) {
@@ -120,6 +117,7 @@ static BOOL isIos7() {
 	
 	return self;
 }
+
 
 - (void)setup
 {
@@ -144,10 +142,6 @@ static BOOL isIos7() {
 	_dividerView.splitViewController = self;
 	_dividerView.backgroundColor = MG_DEFAULT_CORNER_COLOR;
 	_dividerStyle = MGSplitViewDividerStyleThin;
-
-    // Added github pull request to fix ios6 layout issues when starting ipad in landscape:
-    // https://github.com/mattgemmell/MGSplitViewController/pull/75
-    self.view.autoresizesSubviews = NO;
 }
 
 
@@ -257,7 +251,7 @@ static BOOL isIos7() {
 	}
 	
 	// Account for status bar, which always subtracts from the height (since it's always at the top of the screen).
-	if (!isIos7()) { height -= statusBarHeight; }
+	height -= statusBarHeight;
     height -= navigationBarHeight;
 	
 	return CGSizeMake(width, height);
@@ -282,7 +276,7 @@ static BOOL isIos7() {
 	}
 	
 	// Layout the master, divider and detail views.
-    CGRect newFrame = CGRectMake(0, 0, width, height);
+	CGRect newFrame = CGRectMake(0, 0, width, height);
 	UIViewController *controller;
 	UIView *theView;
 	BOOL shouldShowMaster = [self shouldShowMasterForInterfaceOrientation:theOrientation];
@@ -306,6 +300,7 @@ static BOOL isIos7() {
 			newFrame.origin.x += newFrame.size.width;
 			newFrame.size.width = width - newFrame.origin.x;
 			detailRect = newFrame;
+			
 		} else {
 			if (!shouldShowMaster) {
 				// Move off-screen.
@@ -483,7 +478,7 @@ static BOOL isIos7() {
 	
 	leadingCorners.frame = leadingRect;
 	trailingCorners.frame = trailingRect;
-
+	
 	// Ensure corners are visible and frontmost.
 	if (!leadingCorners.superview) {
 		[self.view insertSubview:leadingCorners aboveSubview:self.detailViewController.view];
